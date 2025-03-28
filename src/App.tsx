@@ -19,7 +19,7 @@ function App() {
     setInitialData(totalGlobal, brokers);
   }
   return (
-    <Router>
+    <Router basename={import.meta.env.BASE_URL}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/broker/:id" element={<Broker/>} />
