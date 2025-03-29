@@ -54,7 +54,7 @@ export default function AddInvestment() {
       await guardarInversion(inversion);
       // También podés guardar en el store si querés:
       // addOperacion(broker, tipoActivo, { fecha: inversion.fecha, tipo: 'compra', monto: inversion.monto });
-      navigate('/');
+      navigate('/inversiones');
     } catch (err) {
       alert('Error guardando la inversión');
     }
@@ -71,8 +71,7 @@ export default function AddInvestment() {
 
   return (
     <div className="min-h-screen bg-black text-white p-6">
-      <h1 className="text-2xl font-bold mb-6">Agregar inversión</h1>
-
+      <h1 className="text-5xl font-bold mb-6">Agregar</h1>
       <div className="mb-4">
         <div className='flex justify-between items-center'>
           <label className="block mb-1">Monto</label>
@@ -143,7 +142,7 @@ export default function AddInvestment() {
       <button
         onClick={handleGuardar}
         className="w-full py-2 bg-gradient-to-r from-blue-500 
-        to-purple-500 text-white font-bold text-xl hover:shadow-lg rounded-full flex items-center justify-center
+        to-purple-500 text-white font-bold text-xl hover:shadow-lg rounded-xl flex items-center justify-center
         hover:scale-110"
       >
         Guardar

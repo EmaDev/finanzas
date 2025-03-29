@@ -1,4 +1,3 @@
-// src/services/firebaseService.ts
 import { db } from './config';
 import {
     collection,
@@ -23,7 +22,7 @@ type BrokerInversiones = {
     total: number;
 };
 
-type BrokerResumen = {
+export type BrokerResumen = {
     broker: string;
     total: number;
 };
