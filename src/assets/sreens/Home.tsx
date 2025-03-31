@@ -1,71 +1,74 @@
-import { useNavigate } from "react-router-dom";
-import { TiPlus } from "react-icons/ti";
-import CotizacionCard from "../components/CotizacionCard";
-import BrokerCard from "../components/BrokerCard";
-import { useEffect, useState } from "react";
-import { BrokerResumen, getBrokersTotales } from "../../data/firebaseService";
-import { FaCaretDown } from "react-icons/fa";
+import { useEffect, useState } from 'react';
+import { FaCaretRight } from 'react-icons/fa'
+import { useNavigate } from 'react-router-dom';
+import { getIdConsumosActivo, obtenerOperacionesConTotales } from '../../data/consumosService';
 
-export default function Home() {
-  const navigate = useNavigate();
-  const [total, setTotal] = useState(0);
-  const [brokers, setBrokers] = useState<BrokerResumen[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
+export const Home = () => {
 
-  useEffect(() => {
-    getInversiones();
-  }, [])
+    //const [isLoading, setisLoading] = useState(false);
+    const [totales, setTotal] = useState<{ inicio: number; actual: number }>();
+    const navigate = useNavigate();
 
-  const getInversiones = async () => {
-    setLoading(true);
-    const { totalGlobal, brokers } = await getBrokersTotales();
-    setTotal(totalGlobal)
-    setBrokers(brokers);
-    setLoading(false);
-  }
+    useEffect(() => {
+        getData();
+    }, [])
 
-  return (
-    <div className="min-h-screen bg-black text-white p-6 relative">
-      <h1 className="font-bold mb-4 flex gap-3 items-end">
-        <span className="text-5xl ">Inversiones</span>
-        <FaCaretDown className="text-3xl"/>
-      </h1>
-      <p className="text-xl mb-6">Total: $ {total.toLocaleString()}</p>
-      <div className="border-t border-gray-700 pt-2">
 
-        <CotizacionCard type="Dolar" />
-        <CotizacionCard type="Cripto" />
-        <div className="mt-4">
-          <h2 className="text-xl font-bold mb-4">Mis Brokers</h2>
+    const getData = async () => {
 
-          <div className="space-y-3">
-            {isLoading
-              ? Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="animate-pulse bg-white h-[72px] rounded-xl"
-                />
-              ))
-              : brokers.map((broker) => (
-                <BrokerCard
-                  key={broker.broker}
-                  nombre={broker.broker}
-                  total={broker.total}
-                  onClick={() => navigate(`/inversiones/broker/${broker.broker.toLowerCase()}`)}
-                />
-              ))}
-          </div>
+        //setisLoading(true)
+        const { ok, id } = await getIdConsumosActivo();
+
+        if (ok) {
+            const { total } = await obtenerOperacionesConTotales("debitos", id)
+
+            setTotal({
+                inicio: total?.montoInicio || 0,
+                actual: total?.monto || 0
+            })
+        }
+
+        //setisLoading(false)
+    }
+
+
+    return (
+        <div className='min-h-screen bg-black text-white p-6'>
+            <h3 className='font-medium text-lg mb-6'>¿A qué modulo querés ingresar?</h3>
+
+            <div className='w-full bg-white p-3 rounded-lg text-black' >
+                <div className='flex justify-between items-center'
+                    onClick={() => navigate("/consumos")}
+                >
+                    <p className='font-bold'>Consumos</p>
+                    <FaCaretRight className='text-xl' />
+                </div>
+                <div className='bg-gray-100 p-3 rounded-lg'>
+                    <div className='pb-3 border-b'>
+                        <p>Disponible</p>
+                        <p className='text-2xl font-bold'>$ {totales?.actual.toLocaleString()}</p>
+                    </div>
+                    <div className='flex justify-between items-center font-semibold'>
+                        <p>Total:</p>
+                        <p>$ {totales?.inicio.toLocaleString()}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className='mt-6 w-full bg-white p-3 rounded-lg text-black' >
+                <div className='flex justify-between items-center'
+                    onClick={() => navigate("/inversiones")}
+                >
+                    <p className='font-bold'>Inversiones</p>
+                    <FaCaretRight className='text-xl' />
+                </div>
+                <div className='bg-gray-100 p-3 rounded-lg'>
+                    <div className='pb-3 border-b'>
+                        <p>Total</p>
+                        <p className='text-2xl font-bold'>******</p>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div
-        onClick={() => navigate('/inversiones/add')}
-        className="fixed h-14 w-14 bottom-6 right-4 bg-gradient-to-r from-blue-500 
-          to-purple-500 text-white font-bold text-xl hover:shadow-lg rounded-full flex items-center justify-center
-          hover:scale-110 shadow-xl"
-      >
-        <TiPlus />
-      </div>
-    </div>
-  );
+    )
 }
-
