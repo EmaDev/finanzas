@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 const tabs = ["Debitos", "Creditos"];
 
 export const Consumos = () => {
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("Debitos");
 
   return (
@@ -37,14 +36,7 @@ export const Consumos = () => {
       </div>
 
       {activeTab === "Debitos" ? <DebitosView /> : <CreditosView />}
-      <button
-        onClick={() => navigate('/consumos/agregar')}
-        className="fixed h-14 w-14 bottom-6 right-4 bg-gradient-to-r from-blue-500 
-      to-purple-500 text-white font-bold text-xl hover:shadow-lg rounded-full flex items-center justify-center
-      hover:scale-110 shadow-xl"
-      >
-        <TiPlus />
-      </button>
+
     </div>
   );
 }
@@ -52,8 +44,11 @@ export const Consumos = () => {
 function DebitosView() {
 
   const [isLoading, setisLoading] = useState(false);
+  const [idConsumos, setIdConsumos] = useState<string>("");
   const [totalesConsumo, setTotalesConsumo] = useState<TotalesConsumos>();
   const [operaciones, setOperaciones] = useState<OperacionConsumo[]>([]);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     getData();
@@ -66,6 +61,7 @@ function DebitosView() {
     const { ok, id } = await getIdConsumosActivo();
 
     if (ok) {
+      setIdConsumos(id);
       const { operaciones, total } = await obtenerOperacionesConTotales("debitos", id)
 
       setTotalesConsumo(total!);
@@ -81,7 +77,7 @@ function DebitosView() {
     return 100 - Number.parseInt(porcentaje)
   }
 
-  const resetear = async() => {
+  const resetear = async () => {
     return Swal.fire({
       text: "¿Seguro querés resetear la cartera?",
       showDenyButton: true,
@@ -94,7 +90,7 @@ function DebitosView() {
           setTotalesConsumo(undefined)
           Swal.fire("Borrado!", "", "success");
         });
-      } 
+      }
     });
   }
 
@@ -109,9 +105,9 @@ function DebitosView() {
               locale: es,
             })}
           </p>
-          <button 
-          onClick={resetear}
-          className='border border-red-500 px-2 py-1 rounded-xl text-red-500 text-sm' >
+          <button
+            onClick={resetear}
+            className='border border-red-500 px-2 py-1 rounded-xl text-red-500 text-sm' >
             Resetear
           </button>
         </div>
@@ -162,7 +158,14 @@ function DebitosView() {
             ))
         }
       </div>
-
+      <button
+        onClick={() => navigate(`/consumos/agregar?id=${idConsumos}`)}
+        className="fixed h-14 w-14 bottom-6 right-4 bg-gradient-to-r from-blue-500 
+      to-purple-500 text-white font-bold text-xl hover:shadow-lg rounded-full flex items-center justify-center
+      hover:scale-110 shadow-xl"
+      >
+        <TiPlus />
+      </button>
     </div>
   );
 }

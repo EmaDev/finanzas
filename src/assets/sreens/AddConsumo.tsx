@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdAttachMoney } from "react-icons/md";
 import { guardarConsumo } from '../../data/consumosService';
+import { useParams, useSearchParams } from 'react-router-dom';
 
 const categorias = [
     'Transporte', 'Servicios', 'Entrenimiento', 'Viajes', 'Deportes', 'Comida',
@@ -10,6 +11,7 @@ const cuotasDisponibles = [1, 2, 3, 4, 6, 12, 18];
 const medios = ['Mercado Pago', 'Go Cuotas', 'Bancario', 'Otro'];
 
 export const AddConsumo = () => {
+    const [searchParams] = useSearchParams();
     const [monto, setMonto] = useState('');
     const [categoria, setCategoria] = useState('');
     const [descripcion, setDescripcion] = useState('');
@@ -18,6 +20,9 @@ export const AddConsumo = () => {
     const [medio, setMedio] = useState('');
     const [esIngreso, setEsIngreso] = useState(false);
 
+    useEffect( () => {
+        console.log(searchParams.get("id"))
+    },[])
     const formatNumber = (value: string) => {
         const cleanValue = value.replace(/\D/g, ""); // solo números
         if (!cleanValue) return "";
@@ -48,7 +53,7 @@ export const AddConsumo = () => {
             esApertura: esIngreso && categoria === "Apertura" && !esCredito
         };
 
-        await guardarConsumo(data, "28-03-2025");
+        await guardarConsumo(data, searchParams.get("id") || "");
 
     };
 
